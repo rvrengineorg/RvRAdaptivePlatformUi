@@ -18,6 +18,7 @@ class AdaptiveAppBar {
   /// Creates an adaptive app bar configuration
   const AdaptiveAppBar({
     this.title,
+    this.titleWidget,
     this.actions,
     this.leading,
     this.useNativeToolbar = true,
@@ -28,6 +29,11 @@ class AdaptiveAppBar {
 
   /// Title for the app bar
   final String? title;
+
+  /// Rich title widget for the app bar (e.g. AnimatedSwitcher for smooth transitions).
+  /// Takes precedence over [title] for CupertinoNavigationBar and Material AppBar.
+  /// [title] is still used for iOS 26+ native toolbar (UIToolbar requires String).
+  final Widget? titleWidget;
 
   /// Action buttons in the app bar
   /// - iOS 26+ with native toolbar: Rendered as native UIBarButtonItem in UIToolbar
@@ -75,6 +81,7 @@ class AdaptiveAppBar {
   /// Creates a copy of this app bar with the given fields replaced
   AdaptiveAppBar copyWith({
     String? title,
+    Widget? titleWidget,
     List<AdaptiveAppBarAction>? actions,
     Widget? leading,
     bool? useNativeToolbar,
@@ -84,6 +91,7 @@ class AdaptiveAppBar {
   }) {
     return AdaptiveAppBar(
       title: title ?? this.title,
+      titleWidget: titleWidget ?? this.titleWidget,
       actions: actions ?? this.actions,
       leading: leading ?? this.leading,
       useNativeToolbar: useNativeToolbar ?? this.useNativeToolbar,

@@ -298,9 +298,10 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                 PlatformInfo.isIOS26OrHigher() && useNativeToolbar
                 ? false
                 : true, // Let CupertinoNavigationBar handle back button naturally
-            middle: widget.appBar!.title != null
-                ? Text(widget.appBar!.title!)
-                : null,
+            middle: widget.appBar!.titleWidget ??
+                (widget.appBar!.title != null
+                    ? Text(widget.appBar!.title!)
+                    : null),
             trailing:
                 widget.appBar!.actions != null &&
                     widget.appBar!.actions!.isNotEmpty
@@ -582,9 +583,10 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   widget.appBar!.actions!.isNotEmpty) ||
               widget.appBar!.leading != null)) {
         appBar = AppBar(
-          title: widget.appBar!.title != null
-              ? Text(widget.appBar!.title!)
-              : null,
+          title: widget.appBar!.titleWidget ??
+              (widget.appBar!.title != null
+                  ? Text(widget.appBar!.title!)
+                  : null),
           actions: widget.appBar!.actions?.map((action) {
             if (action.title != null) {
               return TextButton(
