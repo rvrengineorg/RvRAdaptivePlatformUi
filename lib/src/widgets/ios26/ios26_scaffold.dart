@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:inspire_blur/inspire_blur.dart';
 import '../../style/sf_symbol.dart';
 import '../adaptive_app_bar_action.dart';
 import '../adaptive_bottom_navigation_bar.dart';
@@ -208,6 +209,21 @@ class _IOS26ScaffoldState extends State<IOS26Scaffold>
                   children: widget.children,
                 ),
         ),
+        // AppBar 区域模糊背景 — 从顶部向下渐进式模糊
+        // 使用 inspire_blur GPU shader，与底部输入栏模糊保持一致的实现
+        if (hasToolbarContent)
+          Positioned(
+            left: 0,
+            right: 0,
+            top: 0,
+            height: 116, // 对应 Figma CSS height: 116px
+            child: Inspire.backdropBlur(
+              config: InspireBlurConfig.topToBottom(
+                sigma: 30,
+                extent: 1.0,
+              ),
+            ),
+          ),
         // Top toolbar - iOS 26 Liquid Glass style - only show if there's content
         if (hasToolbarContent)
           Positioned(

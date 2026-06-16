@@ -28,24 +28,8 @@ class iOS26ToolbarFactory: NSObject, FlutterPlatformViewFactory {
     }
 }
 
-// MARK: - Container View with Gradient
-class ToolbarContainerView: UIView {
-    var gradientLayer: CAGradientLayer?
-    var onTraitChange: (() -> Void)?
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        // Extend gradient below the container bounds for smooth fade
-        gradientLayer?.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height + 30)
-    }
-
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            onTraitChange?()
-        }
-    }
-}
+// MARK: - Container View
+class ToolbarContainerView: UIView {}
 
 // MARK: - Platform View
 class iOS26ToolbarPlatformView: NSObject, FlutterPlatformView {
@@ -82,7 +66,6 @@ class iOS26ToolbarPlatformView: NSObject, FlutterPlatformView {
             containerView.overrideUserInterfaceStyle = isDark ? .dark : .light
         }
 
-        setupGradient()
         setupNavigationBar()
 
         if let params = args as? [String: Any] {
@@ -110,34 +93,16 @@ class iOS26ToolbarPlatformView: NSObject, FlutterPlatformView {
         return containerView
     }
 
-    private func setupGradient() {
-        containerView.clipsToBounds = false
-
-        // Add gradient layer for better text readability
-        let gradientLayer = CAGradientLayer()
-        gradientLayer.startPoint = CGPoint(x: 0.5, y: 0.0)
-        gradientLayer.endPoint = CGPoint(x: 0.5, y: 1.0)
-        containerView.layer.insertSublayer(gradientLayer, at: 0)
-        containerView.gradientLayer = gradientLayer
-        containerView.onTraitChange = { [weak self] in
-            self?.updateGradientColors()
-        }
-        updateGradientColors()
-    }
-
     private func setupNavigationBar() {
         containerView.backgroundColor = .clear
 
-        // Make navigation bar transparent to show gradient behind
         navigationBar.translatesAutoresizingMaskIntoConstraints = false
         navigationBar.items = [navigationItem]
 
-        // Configure transparent appearance
+        // iOS 26+ 默认外观自带 Liquid Glass 模糊效果，不需要手动渐变
         if #available(iOS 13.0, *) {
             let appearance = UINavigationBarAppearance()
-            appearance.configureWithTransparentBackground()
-            appearance.backgroundColor = .clear
-            appearance.shadowColor = .clear
+            appearance.configureWithDefaultBackground()
             navigationBar.standardAppearance = appearance
             navigationBar.scrollEdgeAppearance = appearance
             if #available(iOS 15.0, *) {
@@ -153,20 +118,6 @@ class iOS26ToolbarPlatformView: NSObject, FlutterPlatformView {
             navigationBar.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             navigationBar.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
-    }
-
-    private func updateGradientColors() {
-        let isDarkMode = containerView.traitCollection.userInterfaceStyle == .dark
-        let baseColor = isDarkMode ? UIColor.black : UIColor.white
-
-        // Subtle gradient for text readability
-        containerView.gradientLayer?.colors = [
-            baseColor.withAlphaComponent(0.85).cgColor,  // 0% - slightly transparent top
-            baseColor.withAlphaComponent(0.6).cgColor,   // 40% - fade
-            baseColor.withAlphaComponent(0.2).cgColor,   // 70% - more fade
-            baseColor.withAlphaComponent(0.0).cgColor    // 100% - transparent
-        ]
-        containerView.gradientLayer?.locations = [0.0, 0.4, 0.7, 1.0]
     }
 
     private func configureItems(_ params: [String: Any]) {
